@@ -11,10 +11,9 @@ class ConcreteHandler : AbstractHandler() {
 
     val sNullable by PropBuilder<String?>()
 
-    val listNullable by paramType<List<String>>()
+    val listNullable by paramType<List<String?>>()
 
     override fun handle(methodInvokeDto: MethodInvokeDto) {
-
         val s11 = s1(methodInvokeDto)
         val sNullable1 = sNullable(methodInvokeDto)
         val listNullable1 = listNullable(methodInvokeDto)
