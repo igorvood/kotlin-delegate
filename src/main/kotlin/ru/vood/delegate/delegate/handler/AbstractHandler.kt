@@ -5,33 +5,32 @@ import kotlin.properties.ReadOnlyProperty
 abstract class AbstractHandler {
 
 
+    abstract fun handle(methodInvokeDto: MethodInvokeDto)
+
     val meta: MutableMap<ParamName, MetaParam> = mutableMapOf()
 
-    fun<T> getParam(name: ParamName, data: MethodInvokeDto): T{
-        val any = data.inParam[name]!! as T
-        return any
+    fun <T> getParam(name: ParamName, data: MethodInvokeDto): T {
+        return data.inParam[name]!! as T
+    }
+
+    fun <T> getParamNullable(name: ParamName, data: MethodInvokeDto): T? {
+        return data.inParam[name] as T
     }
 
     fun string() = PropBuilder<String>()
 
+    fun <T> paramType() = PropBuilder<T>()
 
-    inner class PropBuilder<R>(
-//         var name: ParamName = ParamName(""),
-//        var function: GenerateFieldValueFunction<ID_TYPE, DataType<R>> = { _, _ ->
-//            error("Необходимо определить ф-цию в мете")
-//        }
-    ) //: Builder<(MethodInvokeDto) -> R>
-    {
+    inner class PropBuilder<R> {
 
         operator fun provideDelegate(
             thisRef: AbstractHandler,
-            property: kotlin.reflect.KProperty<*>
+            property: kotlin.reflect.KProperty<*>,
         ): ReadOnlyProperty<AbstractHandler, (MethodInvokeDto) -> R> {
             val paramName = ParamName(property.name)
             val returnType = property.returnType
             val kTypeProjection = returnType.arguments[1]
             val classNameStr = ClassNameStr(kTypeProjection.type.toString())
-//            val build: MetaProperty<R> = this@PropBuilder.build()
 
             thisRef.addProp(paramName, classNameStr)
             return ReadOnlyProperty { thisRef, property ->
@@ -43,7 +42,7 @@ abstract class AbstractHandler {
 //        override fun build(): MetaProperty<R> = MetaProperty(name)
     }
 
-    fun  addProp(build: ParamName, classNameStr: ClassNameStr){
+    fun addProp(build: ParamName, classNameStr: ClassNameStr) {
         meta[build] = MetaParam(classNameStr)
     }
 
