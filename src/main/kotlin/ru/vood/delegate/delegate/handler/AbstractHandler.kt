@@ -9,8 +9,11 @@ abstract class AbstractHandler {
 
     val meta: MutableMap<ParamName, MetaParam> = mutableMapOf()
 
-    fun <T> getParam(name: ParamName, data: MethodInvokeDto): T {
-        return data.inParam[name]!! as T
+    fun <T> getParam(name: ParamName, data: MethodInvokeDto, optional: Boolean): T {
+        return if (optional)
+            data.inParam[name] as T
+        else data.inParam[name]!! as T
+
     }
 
     fun <T> getParamNullable(name: ParamName, data: MethodInvokeDto): T? {
@@ -34,7 +37,7 @@ abstract class AbstractHandler {
 
             thisRef.addProp(paramName, classNameStr)
             return ReadOnlyProperty { thisRef, property ->
-                return@ReadOnlyProperty { q -> thisRef.getParam<R>(paramName, q) }
+                return@ReadOnlyProperty { q -> thisRef.getParam<R>(paramName, q, classNameStr.isOptional()) }
             }
 
         }

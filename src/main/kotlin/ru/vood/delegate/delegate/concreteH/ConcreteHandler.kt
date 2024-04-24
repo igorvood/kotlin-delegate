@@ -16,10 +16,13 @@ class ConcreteHandler : AbstractHandler() {
     override fun handle(methodInvokeDto: MethodInvokeDto) {
 
         val s11 = s1(methodInvokeDto)
-//        val sNullable1 = sNullable(methodInvokeDto)
+        val sNullable1 = sNullable(methodInvokeDto)
+        val listNullable1 = listNullable(methodInvokeDto)
 
         println(s11)
-//        println(sNullable1)
+        println(sNullable1)
+        println(listNullable1)
+
 
 
     }

@@ -8,8 +8,8 @@ import ru.vood.delegate.delegate.handler.ParamName
 
 @Component
 class RunnerSrv(
-    val concreteHandler: ConcreteHandler
-): CommandLineRunner {
+    val concreteHandler: ConcreteHandler,
+) : CommandLineRunner {
 
     override fun run(vararg args: String?) {
 
@@ -20,8 +20,15 @@ class RunnerSrv(
 //        val sNullable by PropBuilder<String?>()
 
 
-        concreteHandler.handle(MethodInvokeDto(
-            mapOf(ParamName("s1") to "value_s1")
-        ))
+        concreteHandler.handle(
+            MethodInvokeDto(
+                mapOf(
+                    ParamName("s1") to "value_s1",
+                    ParamName("listNullable") to listOf("value_listNullable")
+                ),
+            ),
+
+
+            )
     }
 }
