@@ -1,12 +1,11 @@
 package ru.vood.delegate.delegate.handler
 
-import java.util.*
 import kotlin.properties.ReadOnlyProperty
 
 abstract class AbstractHandler {
 
 
-    val meta: MutableMap<ParamName, String> = mutableMapOf()
+    val meta: MutableMap<ParamName, MetaParam> = mutableMapOf()
 
     fun<T> getParam(name: ParamName, data: MethodInvokeDto): T{
         val any = data.inParam[name]!! as T
@@ -17,33 +16,35 @@ abstract class AbstractHandler {
 
 
     inner class PropBuilder<R>(
-        private var name: ParamName = ParamName(""),
+//         var name: ParamName = ParamName(""),
 //        var function: GenerateFieldValueFunction<ID_TYPE, DataType<R>> = { _, _ ->
 //            error("Необходимо определить ф-цию в мете")
 //        }
-    ) : Builder<MetaProperty<R>>
+    ) //: Builder<(MethodInvokeDto) -> R>
     {
 
         operator fun provideDelegate(
             thisRef: AbstractHandler,
             property: kotlin.reflect.KProperty<*>
-        ): ReadOnlyProperty<AbstractHandler, MetaProperty<R>> {
-            name = ParamName(property.name)
+        ): ReadOnlyProperty<AbstractHandler, (MethodInvokeDto) -> R> {
+            val paramName = ParamName(property.name)
             val returnType = property.returnType
+            val kTypeProjection = returnType.arguments[1]
+            val classNameStr = ClassNameStr(kTypeProjection.type.toString())
+//            val build: MetaProperty<R> = this@PropBuilder.build()
 
-            val build: MetaProperty<R> = this@PropBuilder.build()
-            thisRef.addProp(build)
+            thisRef.addProp(paramName, classNameStr)
             return ReadOnlyProperty { thisRef, property ->
-                return@ReadOnlyProperty build
+                return@ReadOnlyProperty { q -> thisRef.getParam<R>(paramName, q) }
             }
 
         }
 
-        override fun build(): MetaProperty<R> = MetaProperty(name)
+//        override fun build(): MetaProperty<R> = MetaProperty(name)
     }
 
-    fun <R> addProp(build: MetaProperty<R>){
-        meta[build.name] = build.name.value
+    fun  addProp(build: ParamName, classNameStr: ClassNameStr){
+        meta[build] = MetaParam(classNameStr)
     }
 
 }
