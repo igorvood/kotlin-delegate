@@ -24,6 +24,7 @@ class RunnerSrv(
             MethodInvokeDto(
                 mapOf(
                     ParamName("s1") to "value_s1",
+                    ParamName("sNullable") to "value_sNullable",
                     ParamName("listNullable") to listOf("value_listNullable")
                 ),
             ),
